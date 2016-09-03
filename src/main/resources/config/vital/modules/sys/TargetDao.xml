@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.TargetDao">
+    
+	<sql id="targetColumns">
+		a.id AS "id",
+		a.id AS "newId",
+		a.domain_id AS "domainId",
+		a.object_code AS "objectCode",
+		a.object_name AS "objectName",
+		a.parent_id AS "parent.id",
+		a.sid AS "sid",
+		a.path AS "path",
+		a.is_default AS "isDefault",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser.id",
+		a.description AS "description",
+		d.enable_org AS "enableOrg"
+	</sql>
+	
+	<sql id="targetJoins">
+		LEFT JOIN t_vital_domain d ON d.id = a.domain_id
+	</sql>
+    
+	<select id="get" resultType="Target">
+		SELECT 
+			<include refid="targetColumns"/>
+		FROM t_vital_target a
+		<include refid="targetJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Target">
+		SELECT 
+			<include refid="targetColumns"/>
+		FROM t_vital_target a
+		<include refid="targetJoins"/>
+		<where>
+			<if test="objectName != null and objectName != ''">
+				AND a.object_name LIKE CONCAT('%', #{objectName}, '%')
+			</if>
+			<if test="domainId != null and domainId != ''">
+				AND a.domain_id = #{domainId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Target">
+		SELECT 
+			<include refid="targetColumns"/>
+		FROM t_vital_target a
+		<include refid="targetJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByDomain" resultType="Target">
+		SELECT
+		<include refid="targetColumns"/>
+		FROM t_vital_target a
+		<include refid="targetJoins"/>
+		<where>
+			a.domain_id=${domainId}
+		</where>
+		ORDER BY a.id
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_target(
+			id,
+			domain_id,
+			object_code,
+			object_name,
+			sid,
+			path,
+		    is_default,
+			create_time,
+			create_user,
+			description
+		) VALUES (
+			<if test="newId != null and newId !=''">
+				#{newId},
+			</if>
+			<if test="newId == null or newId ==''">
+				#{id},
+			</if>
+			#{domainId},
+			#{objectCode},
+			#{objectName},
+			#{sid},
+			#{path},
+		    #{isDefault},
+			#{createTime},
+			#{createUser.id},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_target SET
+			<if test="newId != null and newId!=''">
+				id = #{newId},
+			</if>
+			domain_id = #{domainId},
+			object_code = #{objectCode},
+			object_name = #{objectName},
+			sid = #{sid},
+			path = #{path},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_vital_target
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

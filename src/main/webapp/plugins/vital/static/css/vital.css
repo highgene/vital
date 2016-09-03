@@ -1,0 +1,101 @@
+table{border-spacing: 0; border-collapse: collapse;}
+table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 0px;
+    border-color: grey;
+}
+.dataTable{
+    table-layout: fixed;
+    border: 1px solid #ececec;
+}
+.dataTable th{
+    border-right: 1px solid #ececec;
+    font: bold 12px/36px "宋体";
+    color: #323232;
+    padding: 0 0.5em;
+    background-color: #ecf7ff;
+}
+.dataTable td{
+    position: relative;
+    border-right: 1px solid #ececec;
+    font: 12px/36px "宋体";
+    color: #666666;
+    text-align: center;
+    padding: 0 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dataTable td.title,.dataTable .adjunct{
+    color: #005bf3;
+}
+.dataTable .adjunct{
+    overflow: visible;
+}
+.dataTable .adjunct span{
+    cursor: pointer;
+    text-decoration: underline;
+}
+.dataTable .adjunct .icon{
+    position: relative;
+    float: none;
+    width: 22px;
+    height: 36px;
+    text-align: right;
+    background: url(../images/adjunct_icon.png) no-repeat left center;
+}
+.dataTable .adjunct-name{
+    position: absolute;
+    right: 5px;
+    bottom: 32px;
+    display: none;
+    z-index: 5;
+    width: 245px;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.6);
+}
+.dataTable .adjunct-name p{
+    width: 85%;
+    margin: 10px auto;
+    white-space: normal;
+    color: #fff;
+    font: 12px/20px "微软雅黑";
+}
+/*.dataTable .adjunct-name .arrowB{
+    position: absolute;
+    right: 28%;
+    bottom: -20px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: rgba(0,0,0,0.6);
+}*/
+.dataTable .adjunct .arrowB{
+    position: absolute;
+    left: 8px;
+    bottom: 12px;
+    display: none;
+    z-index: 9;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: rgba(0,0,0,0.6);
+}
+.dataTable .adjunct .icon.open .arrowB{
+    display: block;
+}
+.dataTable .adjunct .icon.open + .adjunct-name{
+    display: block;
+}
+.dataTable tr:nth-child(odd){
+    background-color: #f6f6f6;
+}
+.dataTable .number,.dataTable .linkman{
+    width: 60px;
+}
+.dataTable .date{
+    width: 80px;
+}
+.mar-t20{margin-top: 20px!important;}
+.f-r{float: right; display: inline;}

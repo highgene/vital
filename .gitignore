@@ -1,0 +1,12 @@
+/target
+/.idea
+/.settings
+/.classpath
+/.project
+/vital.iml
+/*.iml
+src/main/webapp/WEB-INF/classes/
+src/main/webapp/META-INF/
+/src/main/webapp/WEB-INF/lib
+/target/
+catalina*

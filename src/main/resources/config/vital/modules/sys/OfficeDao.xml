@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.OfficeDao">
+
+
+
+	<sql id="officeColumns">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.org_code AS "code",
+		a.org_name AS "name",
+		a.serial AS "sort",
+ 		a.org_type AS "type",
+ 		a.org_addr AS "orgAddr",
+		a.username,
+		a.phone,
+		a.target_id AS "targetId",
+		a.description,
+		a.create_user AS "createUser.id",
+		a.create_time,
+		a.update_user AS "updateUser.id",
+		a.update_time,
+		p.org_name AS "parent.name"
+	</sql>
+	
+	<sql id="officeJoins">
+		LEFT JOIN t_vital_organization p ON p.id = a.parent_id
+    </sql>
+	
+	<select id="get" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM t_vital_organization a
+		<include refid="officeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM t_vital_organization a
+		<include refid="officeJoins"/>
+		WHERE 1=1
+		<!-- 数据范围过滤 -->
+        (${sqlMap.dsf}
+		ORDER BY a.org_code
+	</select>
+
+	<select id="findListByTarget" resultType="Office">
+		SELECT
+		<include refid="officeColumns"/>
+		FROM t_vital_organization a
+		<include refid="officeJoins"/>
+		WHERE
+		a.target_id = #{targetId}
+		ORDER BY a.org_code
+	</select>
+			
+	<select id="findAllList" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM t_vital_organization a
+		<include refid="officeJoins"/>
+		WHERE 1=1
+		ORDER BY a.org_code
+	</select>
+	
+	<select id="findByParentIdsLike" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM t_vital_organization a
+		<include refid="officeJoins"/>
+		WHERE 1=1
+        <if test="parentIds != null and parentIds != ''">
+            AND a.parent_ids like #{parentIds}
+        </if>
+        <if test="targetId != null and targetId != ''">
+            AND a.target_id = #{targetId}
+        </if>
+		ORDER BY a.org_code
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_vital_organization(
+			id, 
+			parent_id, 
+			parent_ids,
+			org_code,
+			org_name,
+			serial,
+			org_type,
+			org_addr,
+			username,
+			phone,
+			target_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			description
+		) VALUES (
+			#{id}, 
+			#{parent.id}, 
+			#{parentIds},
+			#{code}, 
+			#{name}, 
+			#{sort}, 
+			#{type},
+			#{orgAddr},
+			#{username},
+			#{phone},
+			#{targetId},
+			#{createUser.id},
+			#{createTime},
+			#{updateUser.id},
+			#{updateTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_organization SET
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds},
+			org_code = #{code},
+			org_name = #{name},
+			org_type = #{type},
+			org_addr = #{orgAddr},
+			username = #{username},
+			phone = #{phone},
+			update_user = #{updateUser.id},
+			update_time = #{updateTime},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateParentIds">
+		UPDATE t_vital_organization SET
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateSort">
+		UPDATE t_vital_organization SET
+		serial = #{sort}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete">
+		DELETE from t_vital_organization
+		WHERE id = #{id} OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+	</delete>
+	
+</mapper>

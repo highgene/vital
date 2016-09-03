@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Plugin-URI: code
+Plugin-Id: com.hhwy.code
+Built-By: Administrator
+Build-Jdk: 1.7.0_60
+Plugin-Version: 0.0.16
+Created-By: Apache Maven 3.2.1
+Plugin-Package-Path: com.hhwy.code
+Archiver-Version: Plexus Archiver
+

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.demo.dao.ProjectDescDao">
+    
+	<sql id="projectDescColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.code AS "code",
+		a.serial AS "serial",
+		a.other AS "other",
+		a.project_id AS "projectId",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser.id",
+		a.update_time AS "updateTime",
+		a.update_user AS "updateUser.id",
+		a.description AS "description"
+	</sql>
+	
+	<sql id="projectDescJoins">
+	</sql>
+    
+	<select id="get" resultType="ProjectDesc">
+		SELECT 
+			<include refid="projectDescColumns"/>
+		FROM t_vital_project_desc a
+		<include refid="projectDescJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProjectDesc">
+		SELECT 
+			<include refid="projectDescColumns"/>
+		FROM t_vital_project_desc a
+		<include refid="projectDescJoins"/>
+		<where>
+			<if test="projectId != null and projectId != ''">
+				AND a.project_id = #{projectId}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProjectDesc">
+		SELECT 
+			<include refid="projectDescColumns"/>
+		FROM t_vital_project_desc a
+		<include refid="projectDescJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_project_desc(
+			id,
+			name,
+			code,
+			serial,
+			other,
+			project_id,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			description
+		) VALUES (
+			#{id},
+			#{name},
+			#{code},
+			#{serial},
+			#{other},
+			#{projectId},
+			#{createTime},
+			#{createUser.id},
+			#{updateTime},
+			#{updateUser.id},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_project_desc SET 	
+			name = #{name},
+			code = #{code},
+			serial = #{serial},
+			other = #{other},
+			project_id = #{projectId},
+			update_time = #{updateTime},
+			update_user = #{updateUser.id},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_vital_project_desc
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

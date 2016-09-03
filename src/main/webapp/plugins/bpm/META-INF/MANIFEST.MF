@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Plugin-Id: com.hhwy.bpm
+Archiver-Version: Plexus Archiver
+Built-By: lhm
+Plugin-Version: 0.0.1-SNAPSHOT
+Created-By: Apache Maven 3.3.9
+Build-Jdk: 1.8.0_25
+Plugin-URI: bpm
+Plugin-Package-Path: com.hhwy.bpm
+

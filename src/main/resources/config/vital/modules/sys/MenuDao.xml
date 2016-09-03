@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.MenuDao">
+	
+	<sql id="menuColumns">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.resource_name AS "resourceName",
+		a.url,
+		a.icon,
+		a.serial,
+		a.disabled AS "is_show",
+		a.permission,
+		a.domain_id,
+		a.global_permissions AS "globalPermissions",
+		a.tags,
+		a.resource_type AS "resourceType",
+		a.api,
+		a.description,
+		a.create_user AS "createUser.id",
+		a.create_time,
+		a.update_user AS "updateUser.id",
+		a.update_time,
+		p.resource_name AS "parent.resourceName"
+	</sql>
+	
+	<sql id="menuJoins">
+		LEFT JOIN t_vital_resource p ON p.id = a.parent_id
+    </sql>
+	
+	<select id="get" resultType="Menu">
+		SELECT
+			<include refid="menuColumns"/>
+		FROM t_vital_resource a
+		<include refid="menuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="Menu">
+		SELECT
+		    <include refid="menuColumns"/>
+		FROM t_vital_resource a
+		<include refid="menuJoins"/>
+		WHERE 1=1
+		<if test="domainId != null and domainId != ''">
+			AND a.domain_id = #{domainId}
+		</if>
+		ORDER BY a. parent_ids,a.serial
+	</select>
+
+	<select id="findAllList" resultType="Menu">
+		SELECT
+			<include refid="menuColumns"/>
+		FROM t_vital_resource a
+		<include refid="menuJoins"/>
+		WHERE 1=1
+		ORDER BY a. parent_ids,a.serial
+	</select>
+	
+	<select id="findByParentIdsLike" resultType="Menu">
+		SELECT
+			a.id,
+			a.parent_id AS "parent.id",
+			a.parent_ids
+		FROM t_vital_resource a
+		WHERE a.parent_ids LIKE #{parentIds}
+		ORDER BY  a. parent_ids,a.serial
+	</select>
+	
+	<select id="findByUserId" resultType="Menu">
+		SELECT DISTINCT
+			<include refid="menuColumns"/>
+		FROM t_vital_resource a
+		LEFT JOIN t_vital_resource p ON p.id = a.parent_id
+		JOIN t_vital_role_resource rm ON rm.resource_id = a.id
+		JOIN t_vital_role r ON r.id = rm.role_id
+		JOIN t_vital_user_role ur ON ur.role_id = r.id
+		JOIN t_vital_user u ON u.id = ur.user_id AND u.id = #{userId}
+		WHERE 1=1
+		ORDER BY a. parent_ids,a.serial
+	</select>
+	<select id="findByRoleId" resultType="Menu">
+		SELECT DISTINCT
+		<include refid="menuColumns"/>
+		FROM t_vital_resource a
+		LEFT JOIN t_vital_resource p ON p.id = a.parent_id
+		JOIN t_vital_role_resource rm ON rm.resource_id = a.id
+		JOIN t_vital_role r ON r.id = rm.role_id AND rm.role_id = #{roleId}
+		JOIN t_vital_user_role ur ON ur.role_id = r.id
+		JOIN t_vital_user u ON u.id = ur.user_id
+		WHERE 1=1
+		ORDER BY a. parent_ids,a.serial
+	</select>
+	<select id="findPermissionsByUserId" resultType="Menu">
+			SELECT
+				r2.id, -- 资源ID
+				r2.resource_name AS "resourceName", -- 资源名称
+				r2.parent_id AS "parent.id",
+				r2.parent_ids AS "parentIds",
+				r2.domain_id AS "domainId",
+				r2.permission,
+				r2.disabled,
+				r2.global_permissions,
+				r2.icon,
+				r2.resource_type,
+				r2.url,
+				r2.tooltip,
+				r2.serial,
+				group_concat(r.role_name) AS "roleName", -- 角色
+				t.id AS "targetId", -- 实例ID
+				t.object_name AS "objectName" -- 实例名称
+				from t_vital_role_resource rr -- 角色资源表
+				LEFT JOIN t_vital_role r on rr.role_id=r.id -- 角色表
+				LEFT JOIN t_vital_user_role ur on ur.role_id=r.id -- 用户,角色,实例表
+				LEFT JOIN t_vital_user u ON u.id=ur.user_id -- 用色表
+				LEFT JOIN t_vital_resource r2 on r2.id=rr.resource_id -- 资源表
+				LEFT JOIN t_vital_target t ON t.id=ur.target_id -- 实例表
+				WHERE u.id = #{userId}
+				GROUP BY
+				  r2.id, -- 资源ID
+				  r2.resource_name, -- 资源名称
+				  r2.parent_id,
+				  r2.parent_ids,
+				  r2.domain_id,
+				  r2.permission,
+				  r2.disabled,
+				  r2.global_permissions,
+				  r2.icon,
+				  r2.resource_type,
+				  r2.url,
+				  r2.tooltip,
+				  r2.serial,
+				  t.object_name,t.id
+				ORDER BY r2.parent_ids
+	</select>
+
+	<!--<select id="findAllSelectMenu" resultType="Menu">-->
+		<!--SELECT DISTINCT-->
+		<!--<include refid="menuColumns"/>,-->
+		<!--ur.target_id AS "targetId",-->
+		<!--r.role_name AS "roleName"-->
+		<!--FROM t_vital_resource a-->
+		<!--LEFT JOIN t_vital_resource p ON p.id = a.parent_id-->
+		<!--JOIN t_vital_role_resource rm ON rm.resource_id = a.id-->
+		<!--JOIN t_vital_role r ON r.id = rm.role_id-->
+		<!--JOIN t_vital_user_role ur ON ur.role_id = r.id-->
+		<!--JOIN t_vital_user u ON u.id = ur.user_id-->
+		<!--WHERE 1=1-->
+		<!--ORDER BY ur.target_id,a.parent_ids,a.serial-->
+	<!--</select>-->
+
+
+	<select id="findAllSelectMenu" resultType="Menu">
+			SELECT
+				r2.id, -- 资源ID
+				r2.resource_name AS "resourceName", -- 资源名称
+				r2.parent_id AS "parent.id",
+				r2.parent_ids AS "parentIds",
+				r2.domain_id AS "domainId",
+                r2.permission,
+				group_concat(r.role_name) AS "roleName", -- 角色
+				t.id AS "targetId", -- 实例ID
+				t.object_name AS "objectName" -- 实例名称
+				from t_vital_role_resource rr -- 角色资源表
+				LEFT JOIN t_vital_role r on rr.role_id=r.id -- 角色表
+				LEFT JOIN t_vital_user_role ur on ur.role_id=r.id -- 用户,角色,实例表
+				LEFT JOIN t_vital_user u ON u.id=ur.user_id -- 用色表
+				LEFT JOIN t_vital_resource r2 on r2.id=rr.resource_id -- 资源表
+				LEFT JOIN t_vital_target t ON t.id=ur.target_id -- 实例表
+				WHERE u.id = #{userId}
+				GROUP BY
+				  r2.id, -- 资源ID
+				  r2.resource_name, -- 资源名称
+				  r2.parent_id,
+				  r2.parent_ids,
+				  r2.domain_id,
+                  r2.permission,
+				  t.object_name,t.id
+				ORDER BY r2.parent_ids
+	</select>
+
+
+	
+	<insert id="insert">
+		INSERT INTO t_vital_resource(
+			id, 
+			parent_id, 
+			parent_ids, 
+			resource_name,
+			url,
+			icon,
+			serial,
+			disabled,
+			permission,
+			domain_id,
+			global_permissions,
+			tags,
+			resource_type,
+			api,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			description
+		) VALUES (
+			#{id}, 
+			#{parent.id}, 
+			#{parentIds}, 
+			#{resourceName},
+			#{url},
+			#{icon},
+			#{serial},
+			#{isShow}, 
+			#{permission},
+			#{domainId},
+			#{globalPermissions},
+			#{tags},
+			#{resourceType},
+			#{api},
+			#{createUser.id},
+			#{createTime},
+			#{updateUser.id},
+			#{updateTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_resource SET
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}, 
+			resource_name = #{resourceName},
+			url = #{url},
+			icon = #{icon},
+			serial = #{serial},
+			disabled = #{isShow},
+			permission = #{permission},
+			domain_id= #{domainId},
+			global_permissions = #{globalPermissions},
+			tags = #{tags},
+			resource_type = #{resourceType},
+			api = #{api},
+			update_user = #{updateUser.id},
+			update_time = #{updateTime},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateParentIds">
+		UPDATE t_vital_resource SET
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateSort">
+		UPDATE t_vital_resource SET
+			serial = #{serial}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete">
+		DELETE from t_vital_resource
+		WHERE id = #{id} OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+	</delete>
+	
+</mapper>

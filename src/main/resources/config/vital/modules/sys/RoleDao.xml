@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.RoleDao">
+
+	<resultMap id="roleResult" type="Role">
+		<id property="id" column="id" />
+		<result property="roleName" column="roleName" />
+		<result property="roleCode" column="roleCode" />
+		<result property="domainId" column="domainId" />
+		<result property="tags" column="tags" />
+		<result property="innate" column="innate" />
+		<result property="globalPermissions" column="globalPermissions" />
+		<result property="description" column="description" />
+
+		<collection property="menuList" ofType="Menu">
+			<id property="id" column="menuList.id" />
+		</collection>
+	</resultMap>
+
+	
+    <sql id="roleColumns">
+    	a.id,
+    	a.role_name AS "roleName",
+    	a.role_code AS "roleCode",
+    	a.domain_id AS "domainId",
+    	a.global_permissions AS globalPermissions,
+    	a.tags,
+    	a.innate,
+		a.description,
+		a.create_user AS "createUser.id",
+		a.create_time,
+		a.update_user AS "updateUser.id",
+		a.update_time
+    </sql>
+    
+	<select id="get" resultMap="roleResult">
+		SELECT
+			<include refid="roleColumns"/>,
+		rm.resource_id AS "menuList.id"
+		FROM t_vital_role a
+		LEFT JOIN t_vital_role_resource rm ON rm.role_id = a.id
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByName" resultType="Role">
+		SELECT
+			<include refid="roleColumns"/>
+		FROM t_vital_role a
+		WHERE a.role_name = #{roleName}
+	</select>
+	
+	<select id="getByEnname" resultType="Role">
+		SELECT
+			<include refid="roleColumns"/>
+		FROM t_vital_role a
+		WHERE a.role_code = #{roleCode}
+	</select>
+	
+	<select id="findList" resultType="Role">
+		SELECT <!-- DISTINCT -->
+			<include refid="roleColumns"/>
+		FROM t_vital_role a
+		LEFT JOIN t_vital_user_role ur ON ur.role_id = a.id
+		LEFT JOIN t_vital_user u ON u.id = ur.user_id
+		WHERE 1=1
+		<if test="user != null and user.id != null and user.id != ''">
+			AND u.id = #{user.id}
+		</if>
+		<if test="user != null and user.loginName != null and user.loginName != ''">
+			AND u.login_name = #{user.loginName}
+		</if>
+		<if test="domainId != null and domainId != ''">
+			AND a.domain_id = #{domainId}
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		ORDER BY a.role_name
+	</select>
+	
+	<select id="findAllList" resultType="Role">
+		SELECT
+			<include refid="roleColumns"/>
+		FROM t_vital_role a
+		WHERE 1=1
+		<if test="domainId != null and domainId != ''">
+			AND a.domain_id = #{domainId}
+		</if>
+		ORDER BY  a.role_name
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_role(
+			id, 
+			role_name,
+			role_code,
+			global_permissions,
+            domain_id,
+			innate,
+			tags,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			description
+		) VALUES (
+			#{id}, 
+			#{roleName},
+			#{roleCode},
+			#{globalPermissions},
+			#{domainId},
+			#{innate},
+			#{tags},
+			#{createUser.id},
+			#{createTime},
+			#{updateUser.id},
+			#{updateTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_role SET
+			role_name = #{roleName},
+			role_code = #{roleCode},
+			global_permissions = #{globalPermissions},
+			domain_id = #{domainId},
+			innate = #{innate},
+			tags = #{tags},
+			update_user = #{updateUser.id},
+			update_time = #{updateTime},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteRoleMenu">
+		DELETE FROM t_vital_role_resource WHERE role_id = #{id}
+	</delete>
+	
+	<insert id="insertRoleMenu">
+		INSERT INTO t_vital_role_resource(id,role_id, resource_id)
+		<foreach collection="menuList" item="menu" separator=" union all ">
+			SELECT uuid(),#{id}, #{menu.id}
+			<if test="dbName != 'mssql'">
+			FROM dual
+			</if>
+		</foreach>
+	</insert>
+
+	
+	<delete id="delete">
+		DELETE from t_vital_role
+		WHERE id = #{id}
+	</delete>
+	
+</mapper>

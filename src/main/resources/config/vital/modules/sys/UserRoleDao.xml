@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.UserRoleDao">
+    
+	<sql id="userRoleColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.role_id AS "roleId",
+		a.target_id AS "targetId",
+		a.organization_id AS "organizationId",
+		a.duty AS "duty",
+		a.create_time AS "createTime",
+		a.create_user AS "createUser.id",
+		a.update_time AS "updateTime",
+		a.update_user AS "updateUser.id",
+		a.description AS "description",
+		u2.login_name AS "user.loginName"
+	</sql>
+	
+	<sql id="userRoleJoins">
+		LEFT JOIN t_vital_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="UserRole">
+		SELECT 
+			<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		<include refid="userRoleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="UserRole">
+		SELECT 
+			<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		<include refid="userRoleJoins"/>
+		<where>
+			1=1
+			<if test="user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="targetId != null and targetId != ''">
+				AND a.target_id = #{targetId}
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="UserRole">
+		SELECT 
+			<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		<include refid="userRoleJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findByTarget" resultType="UserRole">
+		SELECT
+		<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		<include refid="userRoleJoins"/>
+		<where>
+			  a.target_id=#{targetId}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+-- 		ORDER  BY a.real_name
+	</select>
+
+	<select id="findByRole" resultType="UserRole">
+		SELECT
+		<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		<include refid="userRoleJoins"/>
+		<where>
+			a.role_id=#{roleId}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+		-- 		ORDER  BY a.real_name
+	</select>
+
+	<select id="findSystemList" resultType="UserRole">
+		SELECT
+		<include refid="userRoleColumns"/>
+		FROM t_vital_user_role a
+		LEFT JOIN t_vital_user u2 ON u2.id = a.user_id
+		LEFT JOIN t_vital_target vt ON a.target_id=vt.id
+		LEFT JOIN t_vital_domain vd ON vt.domain_id=vd.id
+		WHERE vd.enable_multi=0
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_user_role(
+			id,
+			user_id,
+			role_id,
+			target_id,
+			organization_id,
+			duty,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			description
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{roleId},
+			#{targetId},
+			#{organizationId},
+			#{duty},
+			#{createTime},
+			#{createUser.id},
+			#{updateTime},
+			#{updateUser.id},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_user_role SET 	
+			user_id = #{user.id},
+			role_id = #{roleId},
+			target_id = #{targetId},
+			organization_id = #{organizationId},
+			duty = #{duty},
+			update_time = #{updateTime},
+			update_user = #{updateUser.id},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM t_vital_user_role
+		WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteByUserId">
+		DELETE FROM t_vital_user_role
+		WHERE user_id = #{user.id}
+	</delete>
+	<delete id="deleteByRoleId">
+		DELETE FROM t_vital_user_role
+		WHERE role_id = #{roleId}
+	</delete>
+	<delete id="deleteByTargetId">
+		DELETE FROM t_vital_user_role
+		WHERE target_id = #{targetId}
+	</delete>
+
+	
+</mapper>

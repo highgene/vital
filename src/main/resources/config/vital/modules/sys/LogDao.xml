@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.LogDao">
+    
+	<select id="findList" resultType="Log">
+		SELECT
+			a.id,
+			a.execution,
+			a.log_level	AS "logLevel",
+			a.log_message AS "logMessage",
+			a.resource_id	AS "resourceId",
+			a.target_id	AS "targetId",
+			a.client_ip	AS "clientIp",
+			a.client_agent	AS "clientAgent",
+			a.create_user  AS "createUser.id",
+			a.create_time,
+			u.real_name AS "createUser.realName"
+		FROM t_vital_logger a
+		left JOIN t_vital_user u ON u.id = a.create_user
+		WHERE a.create_time BETWEEN #{beginDate} AND #{endDate}
+		<if test="logMessage != null and logMessage != ''">
+			AND (a.create_user LIKE CONCAT('%', #{logMessage}, '%')
+			         OR  a.log_message  LIKE CONCAT('%', #{logMessage}, '%')
+					OR  a.resource_id	 LIKE CONCAT('%', #{logMessage}, '%')
+					OR  a.target_id	 LIKE CONCAT('%', #{logMessage}, '%')
+					OR  a.client_ip	 LIKE CONCAT('%', #{logMessage}, '%')
+					OR  a.client_agent	 LIKE CONCAT('%', #{logMessage}, '%')
+			)
+		</if>
+		ORDER BY a.create_time DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_logger(
+			id,
+			execution,
+			log_level,
+			log_message,
+			resource_id,
+			target_id,
+			client_ip,
+			client_agent,
+			create_user,
+			create_time
+		) VALUES (
+		    #{id},
+		    #{execution},
+		    #{logLevel},
+		    #{logMessage},
+		    #{resourceId},
+		    #{targetId},
+		    #{clientIp},
+		    #{clientAgent},
+		    #{createUser.id},
+		    #{createTime}
+		)
+	</insert>
+	
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>plugin</id>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<fileSets>
+		<fileSet>
+			<directory>src/main/webapp</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes />
+			<excludes>
+				<exclude>demo/</exclude>
+				<exclude>error/</exclude>
+				<exclude>fwebUI/</exclude>
+				<!--exclude>${Plugin-URI}/</exclude-->
+				<exclude>plugins/</exclude>
+				<exclude>resources/</exclude>
+				<exclude>index.jsp</exclude>
+				<exclude>WEB-INF/classes/</exclude>
+				<exclude>WEB-INF/lib/</exclude>
+				<exclude>WEB-INF/fweb.tld</exclude>
+				<exclude>WEB-INF/plugin-config.xml</exclude>
+				<exclude>WEB-INF/web.xml</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/webapp/plugins/${Plugin-URI}</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes />
+			<excludes />
+		</fileSet>
+	</fileSets>
+	<files>
+		<file>
+			<source>target/META-INF/MANIFEST.MF</source>
+			<outputDirectory>/META-INF</outputDirectory>
+		</file>
+	</files>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/WEB-INF/lib</outputDirectory>
+			<includes>
+				<include>com.hhwy:${vital.artifactId}</include>
+			</includes>
+			<excludes>
+				<exclude>com.hhwy:fweb-core</exclude>
+				<exclude>com.hhwy:fweb-codegeneration-ui</exclude>
+				<exclude>com.hhwy:code</exclude>
+			</excludes>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+		</dependencySet>
+	</dependencySets>
+</assembly>

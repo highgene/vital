@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.DictDao">
+
+	<sql id="dictColumns">
+			id,
+			param_name as "paramName",
+			param_name,
+            cn_name as "cnName",
+            param_value as "paramValue",
+            innate,
+	        default_value as "defaultValue",
+			sort,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			description
+	</sql>
+    
+	<select id="get" resultType="Dict">
+		SELECT
+			<include refid="dictColumns"/>
+		FROM t_vital_parameter
+		WHERE id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Dict">
+		SELECT
+		<include refid="dictColumns"/>
+		FROM t_vital_parameter
+		WHERE 1=1
+		<if test="paramName != null and paramName != ''">
+			AND param_name = #{paramName}
+		</if>
+		<if test="description != null and description != ''">
+			AND description LIKE  CONCAT('%', #{description}, '%')
+		</if>
+		ORDER BY param_name, sort, update_time DESC
+	</select>
+	
+	<select id="findAllList" resultType="Dict">
+		SELECT
+			<include refid="dictColumns"/>
+		FROM t_vital_parameter
+		WHERE 1=1
+		ORDER BY param_name, sort, update_time DESC
+	</select>
+	
+	<select id="findTypeList" resultType="string">
+		SELECT 
+			param_name AS "paramName"
+		FROM t_vital_parameter
+		WHERE 1=1
+		GROUP BY param_name
+		ORDER BY param_name
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_parameter(
+			id,
+			param_name,
+            cn_name,
+            param_value,
+            innate,
+	        default_value,
+			sort,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			description
+		) VALUES (
+			#{id},
+			#{paramName},
+            #{cnName},
+            #{paramValue},
+            #{innate},
+	        #{defaultValue},
+			#{sort},
+			#{createUser.id},
+			#{createTime},
+			#{updateUser.id},
+			#{updateTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_parameter SET
+			param_name = #{paramName},
+            cn_name = #{cnName},
+            param_value = #{paramValue},
+            innate = #{innate},
+	        default_value = #{defaultValue},
+			sort = #{sort},
+			update_user = #{updateUser.id},
+			update_time = #{updateTime},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete">
+		DELETE from t_vital_parameter
+		WHERE id = #{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8"> <!-- encoder 可以指定字符集，对于中文输出有意义 -->
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="RollingFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<!-- 每天产生一个日志文件，最多 10 个，自动回滚 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${catalina.base}/logs/fweb-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>10</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<!-- 输出到控制台和文件，可定义更多的 Appender -->
+	<root level="INFO">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="RollingFile" />
+	</root>
+	<logger name="com.hhwy" level="INFO" />
+	<!-- 配置第三方包的日志过滤级别，用于避免刷屏 -->
+	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.springframework" level="WARN" />
+	<logger name="com.opensymphony" level="WARN" />
+	<logger name="org.apache" level="WARN" />
+	<logger name="net.sf.ehcache" level="WARN" />
+	
+	<!-- hibernate 相关配置 -->
+	<logger name="org.hibernate.type.descriptor.sql.BasicBinder"
+		level="WARN" />
+	<logger name="org.hibernate.type.descriptor.sql.BasicExtractor"
+		level="WARN" />
+	<logger name="org.hibernate.SQL" level="INFO" />
+	<logger name="org.hibernate.engine.QueryParameters" level="INFO" />
+	<logger name="org.hibernate.engine.query.HQLQueryPlan" level="INFO" />
+
+</configuration>

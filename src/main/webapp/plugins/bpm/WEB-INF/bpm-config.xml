@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/context  
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/task 
+	http://www.springframework.org/schema/task/spring-task-4.0.xsd
+	http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	    <!-- 单例json对象 -->
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+
+    <!-- 引擎内部提供的UUID生成器，依赖fastxml的java-uuid-generator模块 -->
+    <!-- <bean id="uuidGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator" /> -->
+	
+	<bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="databaseSchemaUpdate" value="true" />
+		<property name="jobExecutorActivate" value="false" />
+		<property name="transactionManager" ref="transactionManager" />
+
+		<property name="idGenerator">
+			<bean class="com.hhwy.bpm.core.IdGen" />
+		</property>
+		 <!-- UUID作为主键生成策略-->
+        <!-- <property name="idGenerator" ref="uuidGenerator" /> -->
+        
+		<property name="labelFontName" value="宋体"></property>
+		<property name="activityFontName" value="宋体"></property>
+	</bean>
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+ <!-- 7大接口--> 
+    <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
+    <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"/>
+    <bean id="formService" factory-bean="processEngine" factory-method="getFormService"/>
+    <bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService"/>
+    <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService"/>
+    <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService"/>
+	
+    <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService"/>
+	<!-- 集成REST服务需要的bean -->
+    <bean id="restResponseFactory" class="org.activiti.rest.service.api.RestResponseFactory" />
+    <bean id="contentTypeResolver" class="org.activiti.rest.common.application.DefaultContentTypeResolver" />
+	<!-- 外观接口 -->
+	<bean id="configFacade" class="com.hhwy.bpm.core.BpmConfigFacade">
+		<property name="engine" ref="processEngine" />
+		<property name="repositoryService" ref="repositoryService" />
+	</bean>
+	<bean id="runtimeFacade" class="com.hhwy.bpm.core.BpmRuntimeFacade">
+		<property name="runtimeService" ref="runtimeService" />
+		<property name="engine" ref="processEngine" />
+		<property name="taskService" ref="taskService" />
+		<property name="formService" ref="formService" />
+		<property name="configFacade" ref="configFacade" />
+		<property name="historyFacade" ref="historyFacade" />
+		<property name="identityService" ref="identityService" />
+		<property name="dao" ref="daoSupport" />
+	</bean>
+	<bean id="historyFacade" class="com.hhwy.bpm.core.BpmHistoryFacade">
+		<property name="historyService" ref="historyService" />
+	</bean>
+	<bean id="bpmService" class="com.hhwy.bpm.runtime.service.impl.RuntimeServiceImpl">
+		<property name="historyFacade" ref="historyFacade" />
+		<property name="runtimeFacade" ref="runtimeFacade" />
+		<property name="messageService" ref="messageConfigService" />
+		<property name="dao" ref="daoSupport" />
+	</bean>
+	<bean id="taskConfigService" class="com.hhwy.bpm.config.service.impl.TaskConfigServiceImpl">
+		<property name="configFacade" ref="configFacade" />
+		<property name="dao" ref="daoSupport" />
+	</bean>
+	<bean id="entrustConfigService" class="com.hhwy.bpm.config.service.impl.EntrustServiceImpl">
+		<property name="dao" ref="daoSupport" />
+	</bean>
+	<!-- <task:scheduled-tasks scheduler="myScheduler"> <task:scheduled ref="task.test" 
+		method="print" cron="*/5 * * * * MON-FRI" /> </task:scheduled-tasks> <bean 
+		id="task.test" class="com.hhwy.bpm.TaskTest"> </bean> <task:scheduler id="myScheduler" 
+		pool-size="10" /> -->
+		
+	<!-- 自动扫描且只扫描@Controller -->
+   <context:component-scan base-package="org.activiti.rest.editor,org.activiti.rest.diagram">
+       <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+   </context:component-scan>
+</beans>

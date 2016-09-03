@@ -1,0 +1,1 @@
+<button class="search-btn f-l mar-r10"  onclick="removeData()">${btn_remove}</button>

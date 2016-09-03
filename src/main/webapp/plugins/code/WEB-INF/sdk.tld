@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE taglib PUBLIC 
+    "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
+    "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+  <tlibversion>1.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>shiro</shortname>
+  <info>shiro</info>
+  <tag>
+    <name>principal</name>
+    <tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.PrincipalTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>property</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+  	<name>hasRole</name>
+  	<tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.HasRoleTag</tagclass>
+  	<attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+  	<name>lacksRole</name>
+  	<tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.LacksRoleTag</tagclass>
+  	<attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+  	<name>hasAnyRoles</name>
+  	<tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.HasAnyRoleTag</tagclass>
+  	<attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+  	<name>hasPermission</name>
+  	<tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.HasPermissionTag</tagclass>
+  	<attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+  	<name>lacksPermission</name>
+  	<tagclass>com.hhwy.fresource.sdk.client.api.tag.shiro.LacksPermissionTag</tagclass>
+  	<attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+</taglib>

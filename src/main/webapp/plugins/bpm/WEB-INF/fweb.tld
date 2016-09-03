@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE taglib PUBLIC 
+    "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
+    "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+  <tlibversion>1.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>Fweb</shortname>
+  <info>Fweb</info>
+  <tag>
+    <name>token</name>
+    <tagclass>com.hhwy.framework.mvc.web.TokenTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+  <tag>
+  	<name>file</name>
+  	<tagclass>com.hhwy.framework.attachment.FileTag</tagclass>
+  	<attribute>
+      <name>table</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>field</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>acceptFileTypes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>repeat</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>read</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>maxFileNum</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>maxSize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+</taglib>

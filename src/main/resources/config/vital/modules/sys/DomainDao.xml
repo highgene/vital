@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhwy.vital.modules.sys.dao.DomainDao">
+    
+	<sql id="domainColumns">
+		a.id AS "id",
+		a.domain_code AS "domainCode",
+		a.domain_name AS "domainName",
+		a.entity_name AS "entityName",
+		a.pk_name AS "pkName",
+		a.summary_url AS "summaryUrl",
+		a.innate AS "innate",
+		a.enable_org AS "enableOrg",
+		a.enable_multi AS "enableMulti",
+		a.default_target_id AS "defaultTargetId",
+		a.create_time AS "createTime",
+		a.description AS "description",
+		t.object_name AS "defaultTargetName"
+	</sql>
+	
+	<sql id="domainJoins">
+		LEFT JOIN t_vital_target t on t.id=a.default_target_id
+	</sql>
+    
+	<select id="get" resultType="Domain">
+		SELECT 
+			<include refid="domainColumns"/>
+		FROM t_vital_domain a
+		<include refid="domainJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Domain">
+		SELECT 
+			<include refid="domainColumns"/>
+		FROM t_vital_domain a
+		<include refid="domainJoins"/>
+		<where>
+			
+			<if test="domainName != null and domainName != ''">
+				AND a.domain_name = #{domainName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findNoSysList" resultType="Domain">
+		SELECT 
+			<include refid="domainColumns"/>
+		FROM t_vital_domain a
+		<include refid="domainJoins"/>
+		<where>
+			id !='1'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findAllList" resultType="Domain">
+		SELECT
+		<include refid="domainColumns"/>
+		FROM t_vital_domain a
+		<include refid="domainJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_vital_domain(
+			id,
+			domain_code,
+			domain_name,
+			entity_name,
+			pk_name,
+			summary_url,
+			innate,
+			enable_org,
+			enable_multi,
+			default_target_id,
+			create_time,
+			description
+		) VALUES (
+			#{id},
+			#{domainCode},
+			#{domainName},
+			#{entityName},
+			#{pkName},
+			#{summaryUrl},
+			#{innate},
+			#{enableOrg},
+			#{enableMulti},
+			#{defaultTargetId},
+			#{createTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_vital_domain SET 	
+			domain_code = #{domainCode},
+			domain_name = #{domainName},
+			entity_name = #{entityName},
+			pk_name = #{pkName},
+			summary_url = #{summaryUrl},
+			innate = #{innate},
+			enable_org = #{enableOrg},
+			enable_multi = #{enableMulti},
+			default_target_id = #{defaultTargetId},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_vital_domain
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

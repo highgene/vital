@@ -1,0 +1,111 @@
+
+<div class="modal" ng-app ng-controller="SaveModelCtrl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h2>{{'MODEL.SAVE.TITLE' | translate}}</h2>
+        </div>
+        <div class="modal-body">
+        	<form ng-app name="myForm" novalidate>
+        	<div class="form-group">
+           		<label for="nameField">{{'MODEL.NAME' | translate}}</label>
+        		<input type="text"
+                       ng-disabled="status.loading"
+                       id="nameField"
+                       name="nameField"
+                       class="form-control"
+                       ng-model="saveDialog.name"
+                       ui-keypress="{13:'save()'}"
+                       auto-focus
+                       ng-change="nameChange(val)"
+                       placeholder="流程名称"
+                       required="required"
+                       ng-maxlength="20"
+                        />
+                <span style="color:red" ng-show="myForm.nameField.$dirty && myForm.nameField.$invalid">
+					<span>{{'MODEL.NAME' | translate}}是必填，且最多20个字符。</span>
+				</span>
+        	</div>
+        	<div class="form-group" ng-hide="saveDialog.hideable">
+           		<label for="keyField">{{'MODEL.KEY' | translate}}</label>
+        		<input type="text"
+                       ng-disabled="status.loading"
+                       id="keyField"
+                       name="keyField"
+                       class="form-control"
+                       ng-model="saveDialog.key"
+                       ui-keypress="{13:'save()'}"
+                       auto-focus 
+                       ng-change="keyChange(val)"
+                       placeholder="流程标识符"
+                       required="required"
+                       ng-pattern="/^[a-zA-Z][a-zA-Z0-9_]{0,254}$/"
+                      />
+                <span style="color:red" ng-show="myForm.keyField.$dirty && myForm.keyField.$invalid">
+					<span>{{'MODEL.KEY' | translate}}必填，只能以字母开头，可包含字母、数字、下划线，且最多255个字符。</span>
+				</span>
+        	</div>
+        	<div class="form-group" >
+           		<label for="docTextArea">{{'MODEL.DESCRIPTION' | translate}}</label>
+           		<textarea id="docTextArea" name="docTextArea" ng-disabled="status.loading" class="form-control"
+           		 ng-model="saveDialog.description" placeholder="流程描述,json格式" requried
+           		 ng-maxlength="2000" ></textarea>
+				<div id="djson" ng-hide="true"> { "businessCode": { "code": "", "desc":"" }, "tableName":"", "detailURL":"" }</div>
+           		 <span style="color:red" ng-show="myForm.docTextArea.$dirty && myForm.docTextArea.$invalid">
+					<span>{{'MODEL.DESCRIPTION' | translate}}必填，且为json格式，最长2000字符。</span>
+				</span>
+        	</div>
+        	</form>
+        </div>
+        <div class="modal-footer">
+        
+        	<div class="pull-right">
+            	<button type="button" class="btn" ng-click="close()" ng-disabled="status.loading" translate>ACTION.CANCEL</button>
+            	<!-- <button class="btn btn-primary" ng-click="saveAndClose()" ng-disabled="status.loading" ng-show="!error" translate>ACTION.SAVE-AND-CLOSE</button> -->
+            	<button class="btn btn-primary" ng-click="checkSave()" ng-disabled="(myForm.$dirty && myForm.$invalid)||status.loading"  translate>ACTION.SAVE</button>
+<!--             	<button class="btn btn-primary" ng-click="checkSave()" ng-disabled="(myForm.nameField.$dirty && myForm.nameField.$invalid||myForm.keyField.$dirty && myForm.keyField.$invalid||myForm.docTextArea.$dirty && myForm.docTextArea.$invalid)||status.loading"  translate>ACTION.SAVE</button> -->
+            </div>
+        
+            <div class="pull-right popup-error" ng-if="error && !error.isConflict">
+                <span>{{error.msg ?error.msg:('MODEL.SAVE.ERROR' | translate)}}</span>
+            </div>
+        
+        	<loading></loading>
+        
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	/* var app = angular.module('myApp', []);
+	app.controller('validateCtrl', function($scope) {
+	   $scope.docTextArea = $scope.saveDialog.description;
+	});
+	app.directive('myJson',function(){
+		return {
+	        require : 'ngModel',
+	        link : function(scope, elm, attrs, ctrl) {
+	        	 ctrl.$parsers.unshift(function(viewValue) {
+	            	try{
+	            		JSON.parse(viewValue);
+	            		ctrl.$setValidity('myJson', true);
+	            		return viewValue;
+	            	}catch(e){
+	            		ctrl.$setValidity('myJson', false);
+		                return undefined;
+	            	}
+	              });
+	        }
+	    };
+	}); */
+	function isJson(val){
+		if(val){
+			try{
+				JSON.parse(val);
+				return true;
+			}catch(e){
+				return false;
+			}
+		}
+		return false;
+	}
+</script>
